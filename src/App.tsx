@@ -1214,7 +1214,7 @@ const DSATracker = ({ user, isDark, toggleTheme, onLogout }: { user: any, isDark
     states.forEach(state => {
       for (let i = 1; i <= 15; i++) {
         const img = new Image();
-        img.src = `/${state}_${i}.png`;
+        img.src = `/${state}_${i}.png?v=1`;
       }
     });
   }, []);
@@ -1430,7 +1430,7 @@ const DSATracker = ({ user, isDark, toggleTheme, onLogout }: { user: any, isDark
                         LVL {progress.currentLevel}
                       </div>
                       <img 
-                        src={isWalking ? `/Walk_${frameIndex}.png` : `/Idle_${frameIndex}.png`}
+                        src={isWalking ? `/Walk_${frameIndex}.png?v=1` : `/Idle_${frameIndex}.png?v=1`}
                         alt="Character" 
                         className="w-full h-full object-contain transition-transform duration-300 drop-shadow-2xl"
                         style={{ transform: `scaleX(${direction})` }}
