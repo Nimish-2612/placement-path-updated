@@ -119,6 +119,9 @@ const authenticateToken = async (req: any, res: any, next: any) => {
 
 // Auth Routes
 app.post("/api/auth/signup", async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ error: "Database is not connected. Please check your MONGODB_URI environment variable." });
+  }
   const { email, password, displayName } = req.body;
   try {
     const existingUser = await User.findOne({ email });
@@ -136,6 +139,9 @@ app.post("/api/auth/signup", async (req, res) => {
 });
 
 app.post("/api/auth/login", async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ error: "Database is not connected. Please check your MONGODB_URI environment variable." });
+  }
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -152,6 +158,9 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 app.get("/api/auth/google/url", (req, res) => {
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+    return res.status(500).json({ error: "Google OAuth is not configured on the server. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET." });
+  }
   const url = client.generateAuthUrl({
     access_type: "offline",
     scope: [
@@ -224,7 +233,25 @@ app.get("/api/auth/google/callback", async (req, res) => {
 });
 
 // API Routes
+app.get("/api/health", async (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? "connected" : "disconnected";
+  res.json({
+    status: "ok",
+    database: dbStatus,
+    env: {
+      MONGODB_URI: !!process.env.MONGODB_URI,
+      GOOGLE_CLIENT_ID: !!process.env.GOOGLE_CLIENT_ID,
+      GOOGLE_CLIENT_SECRET: !!process.env.GOOGLE_CLIENT_SECRET,
+      APP_URL: process.env.APP_URL || "not set (using localhost)",
+      JWT_SECRET: !!process.env.JWT_SECRET
+    }
+  });
+});
+
 app.get("/api/user/profile", authenticateToken, async (req: any, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ error: "Database is not connected. Please check your MONGODB_URI environment variable." });
+  }
   try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -271,6 +298,9 @@ app.patch("/api/user/profile", authenticateToken, async (req: any, res) => {
 });
 
 app.get("/api/projects", authenticateToken, async (req: any, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ error: "Database is not connected. Please check your MONGODB_URI environment variable." });
+  }
   try {
     const projects = await Project.find({ userId: req.user.id }).sort({ createdAt: -1 });
     res.json(projects);

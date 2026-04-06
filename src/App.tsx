@@ -90,7 +90,11 @@ const LoginModal = ({ isOpen, onClose, onLogin }: { isOpen: boolean, onClose: ()
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const { url } = await getGoogleAuthUrl();
+      const response = await getGoogleAuthUrl();
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      const { url } = response;
       const authWindow = window.open(
         url,
         'google_oauth_popup',
