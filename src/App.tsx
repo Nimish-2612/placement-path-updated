@@ -268,7 +268,7 @@ const Navbar = ({ isDark, toggleTheme, user, onLogin, onLogout }: { isDark: bool
         <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20 group-hover:scale-110 transition-transform">
           <Rocket className="w-5 h-5 text-white" />
         </div>
-        <span className="text-xl font-display font-bold tracking-tight text-slate-900 dark:text-zinc-50">PlacementPath</span>
+        <span className="text-xl font-display font-bold tracking-tight text-slate-900 dark:text-zinc-50">Placement Path</span>
       </Link>
       
       <div className="hidden md:flex items-center gap-1 text-sm font-bold text-slate-500 dark:text-zinc-400 bg-slate-100/50 dark:bg-zinc-900/50 p-1 rounded-full border border-slate-200/50 dark:border-zinc-800/50">
@@ -674,7 +674,7 @@ const MentalWellbeing = () => {
         <div className="text-center mb-20">
           <h2 className="text-4xl md:text-5xl font-display font-bold mb-6 text-slate-900 dark:text-zinc-50">It’s not just about skills.</h2>
           <p className="text-slate-600 dark:text-zinc-400 text-lg max-w-2xl mx-auto">
-            PlacementPath is built to support your mental well-being throughout the 
+            Placement Path is built to support your mental well-being throughout the 
             demanding preparation process.
           </p>
         </div>
@@ -882,7 +882,7 @@ const Testimonials = () => {
     {
       name: "Ananya Sharma",
       role: "SDE at Google",
-      content: "PlacementPath's roadmap was a lifesaver. I didn't have to waste time searching for what to study next.",
+      content: "Placement Path's roadmap was a lifesaver. I didn't have to waste time searching for what to study next.",
       avatar: "https://i.pravatar.cc/150?u=ananya"
     },
     {
@@ -953,7 +953,7 @@ const CTA = ({ onLogin, user }: { onLogin: () => void, user: any }) => {
         <div className="relative z-10">
           <h2 className="text-4xl md:text-7xl font-display font-bold text-white mb-8">Ready to land your <br /> dream offer?</h2>
           <p className="text-indigo-100 text-lg md:text-xl max-w-2xl mx-auto mb-12">
-            Join 50,000+ students who are already using PlacementPath to supercharge their careers.
+            Join 50,000+ students who are already using Placement Path to supercharge their careers.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button 
@@ -978,7 +978,7 @@ const Footer = () => {
             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md">
               <Rocket className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-display font-bold tracking-tight text-slate-900 dark:text-zinc-50">PlacementPath</span>
+            <span className="text-xl font-display font-bold tracking-tight text-slate-900 dark:text-zinc-50">Placement Path</span>
           </div>
           <p className="text-slate-500 dark:text-zinc-500 max-w-sm mb-8 leading-relaxed">
             Empowering the next generation of software engineers with the tools and mindset to succeed in the tech industry.
@@ -1009,7 +1009,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-slate-200 dark:border-zinc-900 text-center text-slate-400 dark:text-zinc-600 text-sm">
-        © 2026 PlacementPath. All rights reserved.
+        © 2026 Placement Path. All rights reserved.
       </div>
     </footer>
   );
@@ -1181,7 +1181,7 @@ const DSATracker = ({ user, isDark, toggleTheme, onLogout }: { user: any, isDark
   const [direction, setDirection] = useState(1); // 1 for right, -1 for left
   const [frameIndex, setFrameIndex] = useState(1);
   
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1024 : false);
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 1024);
@@ -1193,7 +1193,7 @@ const DSATracker = ({ user, isDark, toggleTheme, onLogout }: { user: any, isDark
   const getTopicPos = (topic: any, index: number) => {
     if (isMobile) {
       // Vertical layout: alternate x, increment y
-      const x = index % 2 === 0 ? 25 : 75;
+      const x = index % 2 === 0 ? 30 : 70;
       const y = (index + 0.5) * (100 / DSA_TOPICS.length);
       return { x, y };
     }
@@ -1214,7 +1214,7 @@ const DSATracker = ({ user, isDark, toggleTheme, onLogout }: { user: any, isDark
     states.forEach(state => {
       for (let i = 1; i <= 15; i++) {
         const img = new Image();
-        img.src = `/${state} (${i}).png`;
+        img.src = `/${state}_${i}.png`;
       }
     });
   }, []);
@@ -1308,7 +1308,7 @@ const DSATracker = ({ user, isDark, toggleTheme, onLogout }: { user: any, isDark
           title="DSA Quest"
         />
 
-        <main className="py-12 px-6 lg:px-12">
+        <main className="py-12 px-4 sm:px-6 lg:px-12 overflow-x-hidden">
           <div className="max-w-7xl mx-auto">
             <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
@@ -1330,8 +1330,8 @@ const DSATracker = ({ user, isDark, toggleTheme, onLogout }: { user: any, isDark
 
             <div className="pb-12">
               <div className={cn(
-                "relative bg-slate-100 dark:bg-zinc-900/50 rounded-[40px] border-4 border-white dark:border-zinc-800 shadow-2xl overflow-visible p-8 mx-auto",
-                isMobile ? "w-full min-h-[1200px]" : "w-[1000px] aspect-[16/9]"
+                "relative bg-slate-100 dark:bg-zinc-900/50 rounded-[40px] border-4 border-white dark:border-zinc-800 shadow-2xl overflow-visible p-4 sm:p-8 mx-auto",
+                isMobile ? "w-full min-h-[1400px]" : "max-w-[1000px] w-full aspect-[16/9]"
               )}>
                 {/* Grid Background */}
                 <div className="absolute inset-0 opacity-20 dark:opacity-10 rounded-[36px] overflow-hidden" style={{ 
@@ -1418,7 +1418,7 @@ const DSATracker = ({ user, isDark, toggleTheme, onLogout }: { user: any, isDark
                     top: { type: "spring", stiffness: 40, damping: 20 },
                     scale: { repeat: isWalking ? Infinity : 0, duration: 0.4 }
                   }}
-                  className="absolute w-24 h-24 -ml-12 -mt-20 z-20 pointer-events-none"
+                  className="absolute w-16 h-16 sm:w-24 sm:h-24 -ml-8 -mt-14 sm:-ml-12 sm:-mt-20 z-20 pointer-events-none"
                 >
                   <div className="relative w-full h-full">
                     <motion.div 
@@ -1430,7 +1430,7 @@ const DSATracker = ({ user, isDark, toggleTheme, onLogout }: { user: any, isDark
                         LVL {progress.currentLevel}
                       </div>
                       <img 
-                        src={isWalking ? `/Walk (${frameIndex}).png` : `/Idle (${frameIndex}).png`}
+                        src={isWalking ? `/Walk_${frameIndex}.png` : `/Idle_${frameIndex}.png`}
                         alt="Character" 
                         className="w-full h-full object-contain transition-transform duration-300 drop-shadow-2xl"
                         style={{ transform: `scaleX(${direction})` }}
@@ -1603,7 +1603,7 @@ const Sidebar = ({ user, isDark, toggleTheme, isCollapsed, setIsCollapsed, isMob
               <Rocket className="w-5 h-5 text-white" />
             </div>
             {!isCollapsed && (
-              <span className="text-xl font-display font-bold tracking-tight text-slate-900 dark:text-zinc-50 truncate">PlacementPath</span>
+              <span className="text-xl font-display font-bold tracking-tight text-slate-900 dark:text-zinc-50 truncate">Placement Path</span>
             )}
           </div>
           <button onClick={() => setIsMobileOpen(false)} className="lg:hidden p-2 text-slate-500">
@@ -1868,7 +1868,7 @@ const CoreSubjectsPage = ({ user, isDark, toggleTheme, onLogout }: any) => {
           title="Core CS Subjects"
         />
 
-        <main className="py-12 px-6 lg:px-12">
+        <main className="py-12 px-4 sm:px-6 lg:px-12 overflow-x-hidden">
           <div className="max-w-7xl mx-auto">
             {/* Roadmap Header */}
             <section className="mb-12 p-8 rounded-[40px] bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-2xl shadow-indigo-500/20 relative overflow-hidden">
@@ -2015,7 +2015,7 @@ const SettingsPage = ({ user, isDark, toggleTheme, onLogout, setUser }: any) => 
           title="Settings"
         />
 
-        <main className="py-12 px-6 lg:px-12">
+        <main className="py-12 px-4 sm:px-6 lg:px-12 overflow-x-hidden">
           <div className="max-w-4xl mx-auto space-y-8">
             <section className="p-8 rounded-[32px] bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-zinc-50 mb-6 flex items-center gap-2">
@@ -2211,7 +2211,7 @@ const Dashboard = ({ user, isDark, toggleTheme, onLogout, setUser }: { user: any
           user={user}
         />
 
-        <main className="py-12 px-6 lg:px-12">
+        <main className="py-12 px-4 sm:px-6 lg:px-12 overflow-x-hidden">
           <div className="max-w-7xl mx-auto">
             <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
@@ -2460,7 +2460,7 @@ const ProjectsPage = ({ user, isDark, toggleTheme, onLogout }: { user: any, isDa
           title="My Projects"
         />
 
-        <main className="py-12 px-6 lg:px-12">
+        <main className="py-12 px-4 sm:px-6 lg:px-12 overflow-x-hidden">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-12 gap-6">
               <div>
@@ -2822,7 +2822,7 @@ const RoadmapPage = ({ user, isDark, toggleTheme, onLogout }: any) => {
           title="Success Roadmap"
         />
 
-        <main className="py-12 px-6 lg:px-12">
+        <main className="py-12 px-4 sm:px-6 lg:px-12 overflow-x-hidden">
           <div className="max-w-4xl mx-auto">
             {/* Motivational Quote Section */}
             <div className="mb-16 text-center">
