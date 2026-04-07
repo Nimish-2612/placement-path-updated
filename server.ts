@@ -376,6 +376,9 @@ app.post("/api/feedback", authenticateToken, async (req: any, res) => {
 });
 
 app.get("/api/feedback", authenticateToken, async (req: any, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ error: "Database is not connected" });
+  }
   try {
     const feedbacks = await Feedback.find()
       .populate("userId", "displayName photoURL")
@@ -383,6 +386,7 @@ app.get("/api/feedback", authenticateToken, async (req: any, res) => {
       .limit(20);
     res.json(feedbacks);
   } catch (error: any) {
+    console.error("GET /api/feedback error:", error);
     res.status(400).json({ error: error.message });
   }
 });

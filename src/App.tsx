@@ -1128,6 +1128,106 @@ const FeaturesTour = () => {
   );
 };
 
+const PricingTiers = () => {
+  const tiers = [
+    {
+      name: "Free",
+      price: "₹0",
+      description: "Everything you need to get started with your placement journey.",
+      features: [
+        "Structured DSA Roadmap",
+        "Gamified Progress Tracking",
+        "Mental Health Check-ins",
+        "Basic AI Career Assistance",
+        "Project Management",
+        "Community Feedback Wall"
+      ],
+      buttonText: "Get Started",
+      popular: false
+    },
+    {
+      name: "Pro",
+      price: "₹499",
+      description: "Supercharge your prep with advanced AI tools and exclusive content.",
+      features: [
+        "1-on-1 Mock Interviews with AI",
+        "Personalized Roadmap Generation",
+        "Company-specific Interview Prep (FAANG+)",
+        "Resume Analysis & Optimization",
+        "Priority AI Support (Gemini 3.1 Pro)",
+        "Exclusive Community Events & Webinars",
+        "Advanced Analytics & Progress Forecasting",
+        "Ad-free Experience"
+      ],
+      buttonText: "Coming Soon",
+      popular: true,
+      upcoming: true
+    }
+  ];
+
+  return (
+    <SectionReveal id="pricing" className="py-32 px-6 bg-white dark:bg-zinc-950 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-20">
+          <h2 className="text-4xl md:text-6xl font-display font-bold mb-6 text-slate-900 dark:text-zinc-50">Choose Your Path</h2>
+          <p className="text-slate-600 dark:text-zinc-400 text-lg max-w-2xl mx-auto">Flexible plans designed to help you succeed, no matter where you are in your journey.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {tiers.map((tier, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className={cn(
+                "relative p-8 rounded-[40px] border transition-all duration-300 flex flex-col",
+                tier.popular 
+                  ? "bg-indigo-600 border-indigo-500 shadow-2xl shadow-indigo-500/20 text-white scale-105 z-10" 
+                  : "bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-zinc-50"
+              )}
+            >
+              {tier.popular && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-white text-indigo-600 text-xs font-bold rounded-full shadow-lg uppercase tracking-wider">
+                  Most Powerful
+                </div>
+              )}
+              
+              <div className="mb-8">
+                <h3 className={cn("text-2xl font-bold mb-2", tier.popular ? "text-white" : "text-slate-900 dark:text-zinc-50")}>{tier.name}</h3>
+                <div className="flex items-baseline gap-1 mb-4">
+                  <span className="text-5xl font-bold">{tier.price}</span>
+                  <span className={cn("text-sm", tier.popular ? "text-indigo-100" : "text-slate-500 dark:text-zinc-500")}>/month</span>
+                </div>
+                <p className={cn("text-sm leading-relaxed", tier.popular ? "text-indigo-100" : "text-slate-500 dark:text-zinc-500")}>{tier.description}</p>
+              </div>
+
+              <div className="space-y-4 mb-10 flex-1">
+                {tier.features.map((feature, idx) => (
+                  <div key={idx} className="flex items-center gap-3">
+                    <CheckCircle2 className={cn("w-5 h-5 shrink-0", tier.popular ? "text-indigo-200" : "text-indigo-600")} />
+                    <span className="text-sm font-medium">{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button className={cn(
+                "w-full py-4 rounded-2xl font-bold transition-all shadow-lg",
+                tier.popular 
+                  ? "bg-white text-indigo-600 hover:bg-indigo-50" 
+                  : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-500/20"
+              )}>
+                {tier.buttonText}
+              </button>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </SectionReveal>
+  );
+};
+
 const LandingPage = ({ isDark, toggleTheme, user, onLogin, onLogout }: { isDark: boolean, toggleTheme: () => void, user: any, onLogin: () => void, onLogout: () => void }) => {
   if (user) return <Navigate to="/dashboard" />;
   
@@ -1141,6 +1241,7 @@ const LandingPage = ({ isDark, toggleTheme, user, onLogin, onLogout }: { isDark:
         <FeaturesTour />
         <FeatureGrid />
         <Features />
+        <PricingTiers />
         <Testimonials />
         <CTA onLogin={onLogin} user={user} />
       </main>
@@ -2121,7 +2222,7 @@ const Dashboard = ({ user, isDark, toggleTheme, onLogout, setUser }: { user: any
       }
       
       // Fetch feedbacks
-      getFeedbacks().then(setFeedbacks).catch(() => console.error("Failed to load feedbacks"));
+      getFeedbacks().then(setFeedbacks).catch((err) => console.error("Failed to load feedbacks:", err));
     }
   }, [user]);
 
