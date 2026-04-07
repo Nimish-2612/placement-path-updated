@@ -118,3 +118,7 @@ export const submitFeedback = async (feedbackData: any) => {
     body: JSON.stringify(feedbackData),
   });
 };
+
+export const getFeedbacks = async () => {
+  return fetchWithAuth("/feedback");
+};

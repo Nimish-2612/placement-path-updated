@@ -10,7 +10,7 @@ import { TextPlugin } from 'gsap/dist/TextPlugin';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { GoogleGenAI } from "@google/genai";
 import Markdown from 'react-markdown';
-import { signup, login, getGoogleAuthUrl, getUserProfile, updateUserProfile, getProjects, addProject, updateProject, deleteProject, submitMentalHealthCheckin, updateDSAProgress, submitFeedback } from './api';
+import { signup, login, getGoogleAuthUrl, getUserProfile, updateUserProfile, getProjects, addProject, updateProject, deleteProject, submitMentalHealthCheckin, updateDSAProgress, submitFeedback, getFeedbacks } from './api';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(TextPlugin, ScrollTrigger);
@@ -1952,10 +1952,7 @@ const SettingsPage = ({ user, isDark, toggleTheme, onLogout, setUser }: any) => 
     goals: user.goals || "",
     targetJobs: user.targetJobs || ""
   });
-  const [feedback, setFeedback] = useState("");
-  const [rating, setRating] = useState(5);
   const [isSaving, setIsSaving] = useState(false);
-  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1968,22 +1965,6 @@ const SettingsPage = ({ user, isDark, toggleTheme, onLogout, setUser }: any) => 
       toast.error("Failed to update profile.");
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const handleSubmitFeedback = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!feedback.trim()) return;
-    setIsSubmittingFeedback(true);
-    try {
-      await submitFeedback({ content: feedback, rating });
-      setFeedback("");
-      setRating(5);
-      toast.success("Thank you for your feedback!");
-    } catch (error) {
-      toast.error("Failed to submit feedback.");
-    } finally {
-      setIsSubmittingFeedback(false);
     }
   };
 
@@ -2062,49 +2043,6 @@ const SettingsPage = ({ user, isDark, toggleTheme, onLogout, setUser }: any) => 
                 </button>
               </form>
             </section>
-
-            <section className="p-8 rounded-[32px] bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-zinc-50 mb-6 flex items-center gap-2">
-                <MessageSquare className="w-6 h-6 text-indigo-600" />
-                Platform Feedback
-              </h2>
-              <form onSubmit={handleSubmitFeedback} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 dark:text-zinc-300 mb-2">Rating</label>
-                  <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setRating(star)}
-                        className={cn(
-                          "p-2 rounded-lg transition-all",
-                          rating >= star ? "text-yellow-500" : "text-slate-300 dark:text-zinc-700"
-                        )}
-                      >
-                        <Star className={cn("w-6 h-6", rating >= star && "fill-current")} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 dark:text-zinc-300 mb-2">Your Feedback</label>
-                  <textarea
-                    value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-zinc-50 focus:ring-2 focus:ring-indigo-500 outline-none transition-all h-32 resize-none"
-                    placeholder="Tell us what you like or what we can improve..."
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={isSubmittingFeedback}
-                  className="px-8 py-3 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50"
-                >
-                  {isSubmittingFeedback ? "Submitting..." : "Submit Feedback"}
-                </button>
-              </form>
-            </section>
           </div>
         </main>
       </div>
@@ -2119,6 +2057,10 @@ const Dashboard = ({ user, isDark, toggleTheme, onLogout, setUser }: { user: any
   const [showCheckin, setShowCheckin] = useState(false);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [newFeedback, setNewFeedback] = useState("");
+  const [newRating, setNewRating] = useState(5);
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
 
   if (!user) return <Navigate to="/" />;
 
@@ -2177,8 +2119,30 @@ const Dashboard = ({ user, isDark, toggleTheme, onLogout, setUser }: { user: any
           setShowCheckin(true);
         }
       }
+      
+      // Fetch feedbacks
+      getFeedbacks().then(setFeedbacks).catch(() => console.error("Failed to load feedbacks"));
     }
   }, [user]);
+
+  const handleSubmitFeedback = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newFeedback.trim()) return;
+    setIsSubmittingFeedback(true);
+    try {
+      const feedback = await submitFeedback({ content: newFeedback, rating: newRating });
+      setNewFeedback("");
+      setNewRating(5);
+      // Refresh feedbacks to show the new one with user info
+      const updatedFeedbacks = await getFeedbacks();
+      setFeedbacks(updatedFeedbacks);
+      toast.success("Thank you for your feedback!");
+    } catch (error) {
+      toast.error("Failed to submit feedback.");
+    } finally {
+      setIsSubmittingFeedback(false);
+    }
+  };
   
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-zinc-950 transition-colors duration-300">
@@ -2353,6 +2317,87 @@ const Dashboard = ({ user, isDark, toggleTheme, onLogout, setUser }: { user: any
                   </div>
                 </section>
               </div>
+            </div>
+
+            {/* Feedback Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+              {/* Feedback Form */}
+              <section className="p-8 rounded-[32px] bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-zinc-50 mb-6 flex items-center gap-2">
+                  <MessageSquare className="w-6 h-6 text-indigo-600" />
+                  Share Your Feedback
+                </h2>
+                <form onSubmit={handleSubmitFeedback} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-zinc-300 mb-2">Rating</label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setNewRating(star)}
+                          className={cn(
+                            "p-2 rounded-lg transition-all",
+                            newRating >= star ? "text-yellow-500" : "text-slate-300 dark:text-zinc-700"
+                          )}
+                        >
+                          <Star className={cn("w-6 h-6", newRating >= star && "fill-current")} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-zinc-300 mb-2">Your Thoughts</label>
+                    <textarea
+                      value={newFeedback}
+                      onChange={(e) => setNewFeedback(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-zinc-50 focus:ring-2 focus:ring-indigo-500 outline-none transition-all h-32 resize-none"
+                      placeholder="What do you think about Placement Path?"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isSubmittingFeedback}
+                    className="w-full px-8 py-3 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50"
+                  >
+                    {isSubmittingFeedback ? "Submitting..." : "Submit Feedback"}
+                  </button>
+                </form>
+              </section>
+
+              {/* Recent Feedbacks */}
+              <section className="p-8 rounded-[32px] bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-zinc-50 mb-6 flex items-center gap-2">
+                  <Users className="w-6 h-6 text-indigo-600" />
+                  Community Feedback
+                </h2>
+                <div className="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                  {feedbacks.length === 0 ? (
+                    <p className="text-slate-500 dark:text-zinc-500 text-center py-12">No feedback yet. Be the first to share!</p>
+                  ) : (
+                    feedbacks.map((f, i) => (
+                      <div key={i} className="p-4 rounded-2xl bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-700">
+                        <div className="flex items-center gap-3 mb-3">
+                          <img 
+                            src={f.userId?.photoURL || `https://ui-avatars.com/api/?name=${f.userId?.displayName || 'User'}`} 
+                            alt={f.userId?.displayName} 
+                            className="w-8 h-8 rounded-full"
+                          />
+                          <div>
+                            <p className="text-sm font-bold text-slate-900 dark:text-zinc-50">{f.userId?.displayName || 'Anonymous'}</p>
+                            <div className="flex gap-0.5">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star key={star} className={cn("w-3 h-3", star <= f.rating ? "text-yellow-500 fill-current" : "text-slate-300 dark:text-zinc-700")} />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-slate-600 dark:text-zinc-400 text-sm italic">"{f.content}"</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </section>
             </div>
           </div>
         </main>

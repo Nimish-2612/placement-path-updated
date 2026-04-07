@@ -375,6 +375,18 @@ app.post("/api/feedback", authenticateToken, async (req: any, res) => {
   }
 });
 
+app.get("/api/feedback", authenticateToken, async (req: any, res) => {
+  try {
+    const feedbacks = await Feedback.find()
+      .populate("userId", "displayName photoURL")
+      .sort({ createdAt: -1 })
+      .limit(20);
+    res.json(feedbacks);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 // Vite middleware for development
 if (process.env.NODE_ENV !== "production") {
   const vite = await createViteServer({
@@ -384,16 +396,12 @@ if (process.env.NODE_ENV !== "production") {
   app.use(vite.middlewares);
 } else {
   const distPath = path.join(process.cwd(), 'dist');
-
   app.use(express.static(distPath));
-
-  // ✅ ADD THIS LINE (IMPORTANT FIX)
-  app.use(express.static(path.join(process.cwd(), 'public')));
-
   app.get('*', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
